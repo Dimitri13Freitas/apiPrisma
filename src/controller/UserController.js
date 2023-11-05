@@ -28,7 +28,7 @@ export default {
       const users = await prisma.user.findMany();
       return res.json(users);
     } catch (error) {
-      return res.json(error);
+      return res.json({ error });
     }
   },
   async findUser(req, res) {
@@ -40,7 +40,7 @@ export default {
       }
       return res.json(user);
     } catch (error) {
-      return res.json(error);
+      return res.json({ error });
     }
   },
   async updateUser(req, res) {
@@ -56,6 +56,19 @@ export default {
         data: { name, email },
       });
       return res.json(user);
+    } catch (error) {
+      return res.json({ error });
+    }
+  },
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+      const user = await prisma.user.findUnique({ where: { id: +id } });
+      if (!user) {
+        return res.json({ error: "Não foi possível encontrar este usuário" });
+      }
+      await prisma.user.delete({ where: { id: +id } });
+      return res.json({ message: `Usuário ${id} foi deletado` });
     } catch (error) {
       return res.json({ error });
     }
