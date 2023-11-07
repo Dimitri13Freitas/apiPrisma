@@ -26,5 +26,35 @@ export default {
       return res.json({ message: error.message });
     }
   },
+  async findAllPosts(req, res) {
+    try {
+      const posts = await prisma.post.findMany();
+
+      return res.json(posts);
+    } catch (error) {
+      return res.json({ error });
+    }
+  },
+  async updatePost(req, res) {
+    const { id } = req.params;
+    const { content } = req.body;
+    try {
+      const post = await prisma.post.findUnique({ where: { id: +id } });
+      if (!post) {
+        return res.json({ error: "Post não existe" });
+      }
+
+      await prisma.post.update({
+        where: { id: +id },
+        data: {
+          content,
+        },
+      });
+
+      return res.json({ message: "Post foi autualizado" });
+    } catch (error) {
+      return res.json({ message: error.message });
+    }
+  },
 };
 
